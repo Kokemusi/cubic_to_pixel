@@ -1,0 +1,163 @@
+*{
+    margin : 0px;
+}
+
+#div_container_header{
+    background-color: #ffffff;
+}
+#div_container_header{
+    display: flex;
+    flex-direction: row;
+    height:25px;
+}
+
+#select_file{
+    width:75px;
+    height:25px;
+    border : none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+#input_file_name{
+    border: none;
+    outline: none;
+    background: rgba(0,0,0,0.05);
+    box-shadow: inset black 1px 1px;
+    height:25px;
+}
+
+#div_container_file_controller{
+    display: none;
+}
+
+#input_pen_color{
+    border:none;
+    border-right:1px solid #afafaf;
+    background: transparent;
+}
+
+#div_container_pen{
+    display:flex;
+    flex-direction: row;
+}
+
+.radio{
+    display:none;
+}
+
+.radio_button{
+    height:25px;
+    background : transparent;
+    border-right:1px solid #afafaf;
+    white-space: nowrap;
+}
+
+input[type = "radio"]:checked + label{
+    box-shadow: inset black 1px 1px;
+    background : rgba(0,0,0,0.1);
+}
+
+#button_toggle_edge{
+    border: #000000;
+    outline: none;
+    background: transparent;
+    height:25px;
+}
+#button_toggle_edge:hover{
+    background: rgba(0,0,0,0.1);
+}
+#button_toggle_edge:active{
+    box-shadow: inset black 1px 1px;
+    background: rgba(0,0,0,0.2);
+}
+
+#div_container_main{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    height:calc(100% - 25px);
+}
+
+#div_container_editor{
+    position: relative;
+    width:70%;
+    height:100%;
+}
+#div_container_parts{
+    position: relative;
+    height:100%;
+}
+#div_container_preview{
+    position: relative;
+    width:15%;
+    height:100%;
+}
+
+#div_text_position{
+    position:absolute;
+}
+
+#div_canvas_axis{
+    position:absolute;
+    right:0px;
+    width:40px;
+    height:40px;
+}
+
+#div_canvas_main{
+    width:100%;
+    height:100%;
+}
+
+#div_container_parts{
+    white-space: nowrap;
+}
+
+#div_container_preview{
+    white-space: nowrap;
+}
+
+#div_container_preview_header{
+    display:flex;
+    flex-direction: row;
+}
+
+#div_container_radio_parts{
+    display: flex;
+    flex-direction: column;
+}
+
+#div_canvas_preview{
+    overflow: auto;
+    height:50%;
+}
+
+#button_toggleShadow{
+    border: #000000;
+    outline: 1px;
+    height:25px;
+}
+#button_toggleShadow:hover{
+    background: rgba(0,0,0,0.1);
+}
+#button_toggleShadow:active{
+    box-shadow: inset black 1px 1px;
+    background: rgba(0,0,0,0.2);
+}
+#button_toggleOverlap{
+    border: #000000;
+    outline: 1px;
+    height:25px;
+}
+#button_toggleOverlap:hover{
+    background: rgba(0,0,0,0.1);
+}
+#button_toggleOverlap:active{
+    box-shadow: inset black 1px 1px;
+    background: rgba(0,0,0,0.2);
+}
+canvas{
+    background-color: #000000;
+}

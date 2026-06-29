@@ -1,0 +1,93 @@
+<html>
+    <link rel = "stylesheet" href = "style.css" type = "text/css"></link>
+    <script type = "importmap">
+        {
+            "imports":{
+                "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.webgpu.js",
+                "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.webgpu.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/",
+                "key_stats":"./modules/key_stats.js",
+                "ThreeHandler":"./modules/ThreeHandler.js",
+                "MapMesh":"./modules/mapMeshHandler.js",
+                "Preview":"./modules/preview.js"
+            }
+        }
+    </script>
+    <script src = "main.js" type = "module"></script>
+    <div id = "div_container">
+        <div id = "div_container_header">
+            <div id = "div_container_file">
+                    <select id = "select_file">
+                        <option value = "default" selected>ファイル</option>
+                        <option value = "load">プロジェクトの読み込み</option>
+                        <option value = "save-all">プロジェクトの保存</option>
+                        <option value = "save-part">編集中の部品を保存</option>
+                        <option value = "export-all">プロジェクト全体をスプライトとして出力(texture packer形式)</option>
+                        <option value = "export-part">編集中の部品をスプライトとして出力(texture packer形式)</option>
+                    </select>
+                    <input type = text id = "input_file_name" value = "new_project"/>
+                    <div id = "div_container_file_controller">
+                        <input type = "file" id = "load_project" accept=".c2d" />
+                    </div>
+            </div>
+            <div id = "div_input_color">
+                <input type = "color" id = "input_pen_color" value = #FFFFFF />
+            </div>
+            <div id = "div_container_tools">
+                <div id = "div_container_pen">
+                    <input type = "radio" name = "pen_type" id = "radio_block" value ="block" class = "radio" checked /><label for = "radio_block" selected class = "radio_button">ブロック設置</label>
+                    <input type = "radio" name = "pen_type" id = "radio_temp" value ="temp" class = "radio" /><label for = "radio_temp" selected class = "radio_button">仮ブロック設置</label>
+                    <input type = "radio" name = "pen_type" id = "radio_brush" value ="brush" class = "radio" /><label for = "radio_brush" class = "radio_button">ブラシ</label>
+                    <input type = "radio" name = "pen_type" id = "radio_brush_six" value ="brush_six" class = "radio" /><label for = "radio_brush_six" class = "radio_button">ブラシ(全面)</label>
+                    <input type = "radio" name = "pen_type" id = "radio_fill" value ="fill" class = "radio" /><label for = "radio_fill" class = "radio_button">直方体</label>
+                    <input type = "radio" name = "pen_type" id = "radio_eraser" value ="eraser" class = "radio" /><label for = "radio_eraser" class = "radio_button">ブロック削除(安全版)</label>
+                    <input type = "radio" name = "pen_type" id = "radio_beam_eraser" value ="beam" class = "radio" /><label for = "radio_beam_eraser" class = "radio_button">ブロック削除</label>
+                    <input type = "radio" name = "pen_type" id = "radio_sampler" value ="sampler" class = "radio" /><label for = "radio_sampler" class = "radio_button">スポイト</label>
+                    <input type = "radio" name = "pen_type" id = "radio_anchor" value ="anchor" class = "radio" /><label for = "radio_anchor" class = "radio_button">視点中心選択</label>
+                </div>
+            </div>
+            <div id = "div_button_toggle_edge">
+                <button type = button id = "button_toggle_edge">縁取切替</button>
+            </div>
+        </div>
+        <div id = "div_container_main">
+            <div id = "div_container_editor">
+                <div id = "div_text_position">
+                    ここに座標を表示
+                </div>
+                <div id = "div_canvas_axis">
+                    <canvas id = "canvas_axis"></canvas>
+                </div>
+                <div id = "div_canvas_main">
+                    <canvas id = "canvas_main"></canvas>
+                </div>
+            </div>
+            <div id = "div_container_parts">
+                <fieldset>
+                    <div id = "div_text_parts">
+                        パーツ　　
+                    </div>
+                    <div id = "div_container_radio_parts">ここにパーツの選択ボタンを表示</div>
+                    <div id = "div_button_add_parts">
+                        <button type = button id = "button_add_parts">+</button>
+                    </div>
+                </fieldset>
+            </div>
+            <div id = "div_container_preview">
+                <fieldset>
+                    <div id = "div_container_preview_header">
+                        プレビュー
+                        <div id = "div_container_button_export">
+                            <button type = "button" id = "button_toggleShadow">影切替</button>
+                            <button type = "button" id = "button_toggleOverlap">重複部切替</button>
+                        </div>
+                        
+                    </div>
+                    <div id = "div_canvas_preview">
+                        <canvas id = "canvas_preview"></canvas>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</html>
