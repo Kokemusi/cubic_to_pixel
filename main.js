@@ -330,6 +330,7 @@ function main(){
                 }else if(pen.mode == "brush_six"){
                     if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
                         if(!(hitObj == "Plane" || hitObj == "Temporary")){
+                            clickCheck = 1;
                             if((hitObj == pen.target || pen.target == "all") && map[hitObj][hitIndex].color != pen.color){
                                 map[hitObj][hitIndex].color = pen.color;
                                 for(const face in map[hitObj][hitIndex]){
@@ -346,6 +347,7 @@ function main(){
                 }else if(pen.mode == "brush"){
                     if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
                         if(!(hitObj == "Plane" || hitObj == "Temporary")){
+                            clickCheck = 1;
                             if((hitObj == pen.target || pen.target == "all")){
                                 if(map[hitObj][hitIndex][hitFace] != pen.color){
                                     map[hitObj][hitIndex][hitFace] = pen.color;
