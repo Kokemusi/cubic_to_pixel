@@ -34,18 +34,24 @@ class map{
         let colors = [];
         let indices = [];
         let faceInfo = [];
-        let partsHTML = "<input name = 'input_parts' type = 'radio' value ='all' id = 'radio_all' ";
+        let partsHTML = "";
+        partsHTML += "<div id = 'div_container_part_all' style = 'display:flex; flex-direction:row;'>";
+        partsHTML += "<input name = 'input_parts' type = 'radio' id = 'radio_all' value = 'all' ";
         if(editing == "all" || editing == undefined){
             partsHTML += "checked "
         }
-        partsHTML += "class = 'radio' /><label for = 'radio_all'>All</label>"
+        partsHTML += "class = 'radio' /><label for = 'radio_all'>All</label>";
+        partsHTML += "</div>";
         for(const parts in data){
             if(parts != "version"){
-                partsHTML += "<input name = 'input_parts' type = 'radio' id = 'radio_" + parts + "' value = '" + parts + "' "
+                partsHTML += "<div id = 'div_container_part_" + parts + "' style = 'display:flex; flex-direction:row;'>";
+                partsHTML += "<input name = 'input_parts' type = 'radio' id = 'radio_" + parts + "' value = '" + parts + "' ";
                 if(parts == editing){
-                    partsHTML += "checked "
+                    partsHTML += "checked ";
                 }
-                partsHTML += "class = 'radio' /><label for = 'radio_" + parts + "'>" + parts + "</label>"
+                partsHTML += "class = 'radio' /><label for = 'radio_" + parts + "'>" + parts + "</label>";
+                partsHTML += "<button type = 'button' id = 'button_" + parts + "'>✕</button>";
+                partsHTML += "</div>";
                 for(const block in data[parts]){
                     let x = data[parts][block].pos.x;
                     let y = data[parts][block].pos.y;

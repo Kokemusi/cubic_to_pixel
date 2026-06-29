@@ -70,6 +70,15 @@ function sceneUpdate(renderer, new_map, edge){
     renderer.remove(mesh_map.mesh);
     renderer.remove(mesh_map.edge, true);
     mesh_map.meshMap(new_map, pen.target);
+    for(const parts in map){
+        if(parts != "version"){
+            document.getElementById("button_" + parts).addEventListener("click",()=>{
+                delete map[parts];
+                sceneUpdate(mainScreen, map, show_edge == 1);
+                change = 1;
+            });
+        }
+    }
     renderer.add(mesh_map.mesh);
     if(edge) renderer.add(mesh_map.edge, true);
 }
