@@ -329,19 +329,8 @@ function main(){
                     }
                 }else if(pen.mode == "brush_six"){
                     if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
-                        if(hitObj == "Plane" || hitObj == "Temporary"){
-                            if(map[pen.target][hitIndex].color != pen.color){
-                                map[pen.target][hitIndex].color = pen.color;
-                                for(const face in map[hitObj][hitIndex]){
-                                    if(face != "color" && face != "pos"){
-                                        delete map[pen.target][hitIndex][face];
-                                    }
-                                }
-                                sceneUpdate(mainScreen, map, show_edge == 1);
-                                change = 1;
-                            }
-                        }else{
-                            if(map[hitObj][hitIndex].color != pen.color){
+                        if(!(hitObj == "Plane" || hitObj == "Temporary")){
+                            if((hitObj == pen.target || pen.target == "all") && map[hitObj][hitIndex].color != pen.color){
                                 map[hitObj][hitIndex].color = pen.color;
                                 for(const face in map[hitObj][hitIndex]){
                                     if(face != "color" && face != "pos"){
@@ -356,33 +345,14 @@ function main(){
                     }
                 }else if(pen.mode == "brush"){
                     if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
-                        if(hitObj == "Plane" || hitObj == "Temporary"){
-                            if(map[pen.target][hitIndex][hitFace]){
-                                if(map[pen.target][hitIndex][hitFace] != pen.color){
-                                    map[pen.target][hitIndex][hitFace] = pen.color;
-                                    sceneUpdate(mainScreen, map, show_edge == 1);
-                                    change = 1;
-                                }
-                            }else{
-                                if(map[hitObj][hitIndex].color != pen.color){
-                                    map[hitObj][hitIndex][hitFace] = pen.color;
-                                    sceneUpdate(mainScreen, map, show_edge == 1);
-                                    change = 1;
-                                }
-                            }
-                        }else{
-                            if(map[hitObj][hitIndex][hitFace]){
+                        if(!(hitObj == "Plane" || hitObj == "Temporary")){
+                            if((hitObj == pen.target || pen.target == "all")){
                                 if(map[hitObj][hitIndex][hitFace] != pen.color){
                                     map[hitObj][hitIndex][hitFace] = pen.color;
                                     sceneUpdate(mainScreen, map, show_edge == 1);
                                     change = 1;
                                 }
-                            }else{
-                                if(map[hitObj][hitIndex].color != pen.color){
-                                    map[hitObj][hitIndex][hitFace] = pen.color;
-                                    sceneUpdate(mainScreen, map, show_edge == 1);
-                                    change = 1;
-                                }
+
                             }
                         }
 
@@ -411,15 +381,24 @@ function main(){
                                         if(NotInMap(fillIndex, map) && ((x-Fill.p1.x)*(x-Fill.p2.x)*(y-Fill.p1.y)*(y-Fill.p2.y)*(z-Fill.p1.z)*(z-Fill.p2.z) == 0)){
                                             console.log();
                                             if(hitObj == "Plane" || hitObj == "Temporary"){
-                                                map[pen.target][fillIndex] = {
-                                                    pos:{x:x,y:y,z:z},
-                                                    color:pen.color
-                                                };
+                                                if(pen.target != all){
+                                                    map[pen.target][fillIndex] = {
+                                                        pos:{x:x,y:y,z:z},
+                                                        color:pen.color
+                                                    };
+                                                }
                                             }else{
-                                                map[hitObj][fillIndex] = {
-                                                    pos:{x:x,y:y,z:z},
-                                                    color:pen.color
-                                                };
+                                                if(pen.target != "all"){
+                                                    map[pen.target][fillIndex] = {
+                                                        pos:{x:x,y:y,z:z},
+                                                        color:pen.color
+                                                    };
+                                                }else{
+                                                    map[hitObj][fillIndex] = {
+                                                        pos:{x:x,y:y,z:z},
+                                                        color:pen.color
+                                                    };
+                                                }
                                             }
                                         }
                                     }
