@@ -75,6 +75,7 @@ function sceneUpdate(renderer, new_map, edge){
         if(parts != "version"){
             document.getElementById("button_delete_" + parts).addEventListener("click",()=>{
                 delete map[parts];
+                delete mesh_map.show[parts];
                 sceneUpdate(mainScreen, map, show_edge == 1);
                 console.log(map);
                 change = 1;
