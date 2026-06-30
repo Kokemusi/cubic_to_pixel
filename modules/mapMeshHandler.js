@@ -149,11 +149,13 @@ class map{
                             }
                             
                         }
-                        for(let si = 0; si < 4; si++){
-                            for(let i = si; i < 2 + si; i++){
-                                ends.push(x + this.facePc[this.faceL[v][i%4]].x);
-                                ends.push(y + this.facePc[this.faceL[v][i%4]].y);
-                                ends.push(z + this.facePc[this.faceL[v][i%4]].z);
+                        if(this.show[parts] < 2){
+                            for(let si = 0; si < 4; si++){
+                                for(let i = si; i < 2 + si; i++){
+                                    ends.push(x + this.facePc[this.faceL[v][i%4]].x);
+                                    ends.push(y + this.facePc[this.faceL[v][i%4]].y);
+                                    ends.push(z + this.facePc[this.faceL[v][i%4]].z);
+                                }
                             }
                         }
                     }
