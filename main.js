@@ -97,6 +97,7 @@ function sceneUpdate(renderer, new_map, edge){
                 sceneUpdate(mainScreen, map, show_edge == 1);
                 Preview.setPreviewObj(map, mesh_map.show);
                 Preview.doMarge();
+                change = 1;
             });
         }
     }
