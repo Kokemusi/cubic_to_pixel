@@ -402,7 +402,7 @@ function main(){
                                         if(NotInMap(fillIndex, map) && ((x-Fill.p1.x)*(x-Fill.p2.x)*(y-Fill.p1.y)*(y-Fill.p2.y)*(z-Fill.p1.z)*(z-Fill.p2.z) == 0)){
                                             console.log();
                                             if(hitObj == "Plane" || hitObj == "Temporary"){
-                                                if(pen.target != all){
+                                                if(pen.target != "all"){
                                                     map[pen.target][fillIndex] = {
                                                         pos:{x:x,y:y,z:z},
                                                         color:pen.color
