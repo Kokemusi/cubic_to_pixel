@@ -2,7 +2,7 @@ import * as Three from "three/webgpu";
 import * as bufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 class preview{
-	constructor(canvas, dir, dot, view, layer = undefined){
+	constructor(canvas, dir, dot, view, part = undefined){
 		this.canvas = canvas;
 		this.ctx = this.canvas.getContext("2d", {willReadFrequently:true});
 		this.ImageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -10,7 +10,7 @@ class preview{
 		this.dir = ((dir - view) % 4 + 4) % 4;
 		this.dot = dot;
 		this.view = (view % 4 + 4 ) % 4;
-		this.layer = layer;
+		this.part = part;
 		this.minY = -32;
 		this.maxY = 32;
 		this.minX = -32;
@@ -101,12 +101,12 @@ class preview{
 		let MAP = [];
 		this.canvas.width = 1;
 		this.canvas.height = 1;
-		if(this.layer != "" && this.layer != undefined){
+		if(this.part != "" && this.part != undefined){
 			if(Object.keys(map).length > 0){
 				let map_temp = [];
 				for(const obj in map){
 					if(obj != "version"){
-						if(obj == this.layer || this.layer == "all"){
+						if(this.part[obj] == 0){
 							for(const box in map[obj]){
 								map_temp.push(JSON.parse(JSON.stringify(map[obj][box])));
 								MAP.push(JSON.parse(JSON.stringify(map[obj][box])));
@@ -182,10 +182,10 @@ class Previews{
 			}
 		}
 	}
-	setObject(Object, map){
+	setPreviewObj(map, show){
 		for(const dir in this.preview){
 			for(const view in this.preview[dir]){
-				this.preview[dir][view].layer = Object;
+				this.preview[dir][view].part = show;
 			}
 		}
 		this.update(map);

@@ -31,7 +31,6 @@ let mesh_map = new MM.map("div_button_add_parts");
 let editHistory = [];
 let waybackpoint = undefined;
 let Preview = new PV.Previews("canvas_preview");
-Preview.setObject(pen.target, map);
 Preview.createPreviewCanvas();
 Preview.doMarge();
 let mouse = new KS.mouse(document.getElementById("canvas_main"));
@@ -77,12 +76,27 @@ function sceneUpdate(renderer, new_map, edge){
                 delete map[parts];
                 delete mesh_map.show[parts];
                 sceneUpdate(mainScreen, map, show_edge == 1);
+                Preview.setPreviewObj(map, mesh_map.show);
+                Preview.doMarge();
                 console.log(map);
                 change = 1;
             });
             document.getElementById("button_show_" + parts).addEventListener("click",()=>{
                 mesh_map.show[parts] = (mesh_map.show[parts] + 1) % 3;
                 sceneUpdate(mainScreen, map, show_edge == 1);
+                Preview.setPreviewObj(map, mesh_map.show);
+                Preview.doMarge();
+            });
+            document.getElementById("input_text_part_" + parts).addEventListener("focus",()=>{
+                document.getElementById("radio_" + parts).checked = true;
+            });
+            document.getElementById("input_text_part_" + parts).addEventListener("change",()=>{
+                let data_temp = JSON.stringify(map[parts]);
+                delete map[parts];
+                map[document.getElementById("input_text_part_" + parts).value] = JSON.parse(data_temp);
+                sceneUpdate(mainScreen, map, show_edge == 1);
+                Preview.setPreviewObj(map, mesh_map.show);
+                Preview.doMarge();
             });
         }
     }
@@ -138,15 +152,8 @@ document.getElementById("select_file").addEventListener("change",()=>{
             let saving = {"version":"0628"};
             saving[pen.target] = map[pen.target];
             download_data(JSON.stringify(saving, null, "\t"));
-        }else if(file_act == "export-all"){
-            let temp_target = pen.target;
-            pen.target = "all";
-            sceneUpdate(mainScreen, map, show_edge == 1);
+        }else if(file_act == "export"){
             download_data(JSON.stringify(Preview.doMarge(true, document.getElementById("input_file_name").value), null, "\t"), "json");
-            pen.target = temp_target;
-            sceneUpdate(mainScreen, map, show_edge == 1);
-        }else if(file_act == "export-part"){
-            download_data(JSON.stringify(Preview.doMarge(true, pen.target), null, "\t"), "json");
         }
     }
     document.getElementById("select_file").selectedIndex = 0;
@@ -164,6 +171,8 @@ document.getElementById("load_project").addEventListener("change", ()=>{
             map = {...map, ...loadingProject};
             pen.target = "all";
             sceneUpdate(mainScreen, map, show_edge == 1);
+            Preview.setPreviewObj(map, mesh_map.show);
+            Preview.doMarge();
             change = 1;
         };
         reader.readAsText(file.files[0]);
@@ -463,7 +472,7 @@ function main(){
         editHistory.splice(waybackpoint);
         editHistory.push(JSON.stringify(map));
         sceneUpdate(mainScreen, map, show_edge == 1);
-        Preview.setObject(pen.target, map);
+        Preview.setPreviewObj(map, mesh_map.show);
         Preview.update(map);
         Preview.doMarge();
         change = 0;
@@ -499,7 +508,7 @@ function main(){
         if(document.querySelector("input[name = 'input_parts']:checked")){
             if(document.querySelector("input[name = 'input_parts']:checked").value != pen.target){
                 pen.update();
-                Preview.setObject(pen.target, map);
+                Preview.setPreviewObj(map, mesh_map.show);
                 Preview.update(map);
                 Preview.doMarge();
             }

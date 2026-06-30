@@ -20,8 +20,22 @@ class partsHTML{
         this.name.style.display = "none";
         this.label = document.createElement("label");
         this.label.htmlFor = "radio_" + value;
-        this.label.textContent = text;
+        this.label.height = "22px";
         this.label.style.width = "80px";
+        if(value != "all"){
+            this.title = document.createElement("input");
+            this.title.value = text;
+            this.title.id = "input_text_part_" + value;
+            this.title.style.fieldSizing = "content";
+            this.title.style.border = "none";
+            this.title.style.outline = "none";
+            this.title.style.fontSize = "16px";
+            this.label.style.width = "80px";
+            this.title.style.background = "transparent";
+            this.label.appendChild(this.title);
+        }else{
+            this.label.textContent = text;
+        }
         if(show != undefined){
             this.show = document.createElement("button");
             this.show.type = "button";
