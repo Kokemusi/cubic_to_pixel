@@ -68,18 +68,25 @@ let Fill = {
 
 function sceneUpdate(renderer, new_map, edge){
     renderer.remove(mesh_map.mesh);
+    renderer.remove(mesh_map.mesh_tl);
     renderer.remove(mesh_map.edge, true);
     mesh_map.meshMap(new_map, pen.target);
     for(const parts in map){
         if(parts != "version"){
-            document.getElementById("button_" + parts).addEventListener("click",()=>{
+            document.getElementById("button_delete_" + parts).addEventListener("click",()=>{
                 delete map[parts];
                 sceneUpdate(mainScreen, map, show_edge == 1);
+                console.log(map);
                 change = 1;
+            });
+            document.getElementById("button_show_" + parts).addEventListener("click",()=>{
+                mesh_map.show[parts] = (mesh_map.show[parts] + 1) % 3;
+                sceneUpdate(mainScreen, map, show_edge == 1);
             });
         }
     }
     renderer.add(mesh_map.mesh);
+    renderer.add(mesh_map.mesh_tl);
     if(edge) renderer.add(mesh_map.edge, true);
 }
 
@@ -122,7 +129,7 @@ document.getElementById("select_file").addEventListener("change",()=>{
     console.log(file_act);
     if(file_act != "default"){
         if(file_act == "load"){
-            map = {"version":"0628"}
+            map = {"version":"0628"};
             document.getElementById("load_project").click();
         }else if(file_act == "save-all"){
            download_data(JSON.stringify(map, null, "\t"));
@@ -145,6 +152,7 @@ document.getElementById("select_file").addEventListener("change",()=>{
 });
 
 document.getElementById("load_project").addEventListener("change", ()=>{
+    console.log("start loading");
     const file = document.getElementById("load_project");
     let filename = file.files[0].name.replace(/\.[^.]+$/,"");
     document.getElementById("input_file_name").value = filename;
@@ -191,6 +199,7 @@ const mainScreen = new TH.renderer(main, "canvas_main");
 mainScreen.setCamera(cameraOpt);
 let plane = new Three.Mesh(new Three.PlaneGeometry(100,100), new Three.MeshBasicMaterial({visible:false}));
 plane.rotation.x = -Math.PI/2;
+plane.userData.raycaster = true;
 mainScreen.add(plane);
 mainScreen.add(new Three.GridHelper(16, 16, 0xFFFFFF, 0x000000));
 sceneUpdate(mainScreen, map, show_edge == 1);
@@ -215,7 +224,7 @@ class temporaryBlock{
 
 const TempBlock = new temporaryBlock();
 
-//メインアニメーション
+//メイン機能
 let frames = 0;
 function main(){
     mouse.mode("auto");

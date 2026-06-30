@@ -69,7 +69,7 @@ class renderer{
         this.raycaster.far = 1000;
         let nfrom = {x:2*from.x*this.resolution/this.canvas.width-1,y:-2*from.y*this.resolution/this.canvas.height+1};
         this.raycaster.setFromCamera(nfrom, this.camera);
-        return this.raycaster.intersectObjects(this.scene.children).filter(hit => !(hit.object instanceof Three.GridHelper || hit.object instanceof Three.LineSegments));
+        return this.raycaster.intersectObjects(this.scene.children).filter(i => i.object.userData.raycaster);
     }
 }
 

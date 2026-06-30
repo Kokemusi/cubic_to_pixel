@@ -1,5 +1,6 @@
 *{
     margin : 0px;
+    user-select: none;
 }
 
 #div_container_header{
