@@ -229,7 +229,9 @@ class temporaryBlock{
         });
     }
     mesh(){
-        return new Three.Mesh(this.geometry, this.material);
+		let temp = new Three.Mesh(this.geometry, this.material);
+		temp.userData.raycaster = true;
+        return temp;
     }
 }
 
