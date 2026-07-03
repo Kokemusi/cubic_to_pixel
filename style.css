@@ -9,12 +9,12 @@
 #div_container_header{
     display: flex;
     flex-direction: row;
-    height:25px;
+    height:32px;
 }
 
 #select_file{
     width:75px;
-    height:25px;
+    height:32px;
     border : none;
     outline: none;
     box-shadow: none;
@@ -26,7 +26,7 @@
     outline: none;
     background: rgba(0,0,0,0.05);
     box-shadow: inset black 1px 1px;
-    height:25px;
+    height:32px;
 }
 
 #div_container_file_controller{
@@ -49,22 +49,23 @@
 }
 
 .radio_button{
-    height:25px;
+    height:32px;
     background : transparent;
     border-right:1px solid #afafaf;
     white-space: nowrap;
 }
 
-input[type = "radio"]:checked + label{
+input[type = "radio"]:checked + label img{
     box-shadow: inset black 1px 1px;
     background : rgba(0,0,0,0.1);
+    filter: brightness(75%);
 }
 
 #button_toggle_edge{
     border: #000000;
     outline: none;
     background: transparent;
-    height:25px;
+    height:32px;
 }
 #button_toggle_edge:hover{
     background: rgba(0,0,0,0.1);
@@ -78,7 +79,7 @@ input[type = "radio"]:checked + label{
     display: flex;
     flex-direction: row;
     width:100%;
-    height:calc(100% - 25px);
+    height:calc(100% - 32px);
 }
 
 #div_container_editor{
