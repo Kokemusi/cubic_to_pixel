@@ -35,6 +35,7 @@ export class mouse{
 		this.moving = false;
 		this.timer = 0;
 		this.onDown = 0;
+		this.scroll = 0;
 		element.addEventListener("mousedown",(event)=>{
 			this.button = event.button;
 			if(this.status == 0){
@@ -58,7 +59,7 @@ export class mouse{
 			this.timer = setTimeout(()=>{
 				this.vx = 0;
 				this.vy = 0;
-			},5);
+			},1);
 		});
 		element.addEventListener("mouseenter",()=>{
 			this.onit = 1;
@@ -66,6 +67,12 @@ export class mouse{
 		element.addEventListener("mouseleave",()=>{
 			this.onit = 0;
 			this.status = 0;
+		});
+		element.addEventListener("wheel",(event)=>{
+			this.scroll = event.deltaY;
+			this.timer = setTimeout(()=>{
+				this.scroll = 0;
+			},1);
 		});
 	}
 	mode(mode = undefined){

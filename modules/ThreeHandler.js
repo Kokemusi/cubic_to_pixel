@@ -12,7 +12,7 @@ class renderer{
         this.resolution = resolution;
         this.renderer.setPixelRatio(resolution);
         this.scene = new Three.Scene();
-        this.scene.background = new Three.Color(0x7f7f7f);
+        this.scene.background = new Three.Color(0xa0a0a0);
         this.edgeExistence = false;
         if(callback != undefined){
             this.renderer.setAnimationLoop(callback);
@@ -29,6 +29,7 @@ class renderer{
             this.camera.top = option.range/2/this.aspect;
             this.camera.bottom = -option.range/2/this.aspect;
         }
+        this.camera.zoom = option.zoom;
         this.camera.position.set(option.pos.x, option.pos.y, option.pos.z);
         this.camera.lookAt(new Three.Vector3(option.anc.x, option.anc.y, option.anc.z));
         this.camera.aspect = this.aspect;

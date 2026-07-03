@@ -35,8 +35,8 @@ class preview{
 			this.setColor(i, 255, 255, 255, 0);
 		}
 		for(const box of map){
-				let x = Math.floor(this.dot*this.get2dPos(box.pos).x) - this.minX;
-				let y = Math.floor(this.dot*this.get2dPos(box.pos).y) - this.minY;
+			let x = Math.floor(this.dot*this.get2dPos(box.pos).x) - this.minX;
+			let y = Math.floor(this.dot*this.get2dPos(box.pos).y) - this.minY;
 			if(box.color != "transparent"){
 				let dotMap = [
 					[0,0,0,0],
@@ -52,7 +52,7 @@ class preview{
 				];
 				for(let i = 0; i < this.dot; i++){
 					for(let j = 0; j < this.dot; j++){
-						let CS = dotMap[Math.floor(j/this.dot*4)][Math.floor(i/this.dot*4)];
+						let CS = dotMap[Math.floor(j/this.dot*dotMap.length)][Math.floor(i/this.dot*dotMap[0].length)];
 						let c = new Three.Color(box.color);
 						if(Object.keys(box).includes(faceMap[this.dir][CS])){
 							c = new Three.Color(box[faceMap[this.dir][CS]]);
@@ -62,6 +62,13 @@ class preview{
 							if(CS != 0){
 								CS += this.view;
 								CS = (CS - 1) % 4 + 1;
+								if(CS == 1){
+									CS = 1;
+								}else if(CS == 2 || CS == 4){
+									CS = 2;
+								}else if(CS == 3 || CS == 3){
+									CS = 4;
+								}
 								CS *= this.shadow;
 							}
 							this.setColor((x + i) + (y + j) * this.canvas.width, 255 * (16 - CS * 2) / 16 * c.r, 255 * (16 - CS * 2) / 16 * c.g, 255 * (16 - CS * 2) / 16 * c.b, 255);
@@ -152,6 +159,7 @@ class preview{
 	}
 }
 
+
 class Previews{
 	constructor(margeID, dot = 4){
 		this.marge = document.getElementById(margeID);
@@ -192,7 +200,7 @@ class Previews{
 	}
 	doMarge(boolean = false, name){
 		let width = 0;
-		let exporting = {frames:{}};
+		let exporting = {frames:{},meta:{version:"0628"}};
 		let height = 0;
 		for(const dir in this.canvas){
 			for(const view in this.canvas[dir]){

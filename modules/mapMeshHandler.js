@@ -81,8 +81,17 @@ class map{
         this.edge = undefined;
         this.info = undefined;
         this.show = {};
+        this.shadow = 1;
+        this.sunPos = {x:0.5/Math.sqrt(4), y:2/Math.sqrt(4), z:1.5/Math.sqrt(4)};
     }
-    meshMap(data, editing){
+    getShadow(nv){
+        let dot = (nv.x * this.sunPos.x + nv.y * this.sunPos.y + nv.z * this.sunPos.z);
+        let size = Math.sqrt(nv.x ** 2 + nv.y ** 2 + nv.z **2);
+        dot /= size;
+        let shadowCoe = (dot+7)/8;
+        return shadowCoe;
+    }
+    meshMap(data, editing, boolean = true){
         const material = new Three.MeshBasicMaterial({vertexColors : true, side : Three.DoubleSide});
         const geometry = new Three.BufferGeometry();
         const material_tl = new Three.MeshBasicMaterial({depthWrite:false, vertexColors : true, transparent:true, opacity:0.5, side : Three.DoubleSide});
@@ -133,7 +142,7 @@ class map{
                                             apexes.push(x + i + Math.max(0, this.faceV[v].x));
                                             apexes.push(y + j + Math.max(0, this.faceV[v].y));
                                             apexes.push(z + k + Math.max(0, this.faceV[v].z));
-                                            colors.push(c.r, c.g, c.b);
+                                            colors.push(c.r * this.getShadow(this.faceV[v]), c.g * this.getShadow(this.faceV[v]), c.b * this.getShadow(this.faceV[v]));
                                         }else if(this.show[parts] == 1){
                                             apexes_tl.push(x + i + Math.max(0, this.faceV[v].x));
                                             apexes_tl.push(y + j + Math.max(0, this.faceV[v].y));

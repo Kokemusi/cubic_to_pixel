@@ -25,7 +25,8 @@ pen.target = "(test)";
 let cameraOpt = {
     pos:{x:20, y:20, z:20},
     anc:{x:0, y:0, z:0},
-    range:32
+    range:32,
+    zoom:1
 }
 let mesh_map = new MM.map("div_button_add_parts");
 let editHistory = [];
@@ -208,7 +209,7 @@ document.getElementById("canvas_main").oncontextmenu = ()=>{return false};
 //3D周りの宣言とか初期設定
 const mainScreen = new TH.renderer(main, "canvas_main");
 mainScreen.setCamera(cameraOpt);
-let plane = new Three.Mesh(new Three.PlaneGeometry(100,100), new Three.MeshBasicMaterial({visible:false}));
+let plane = new Three.Mesh(new Three.PlaneGeometry(16,16), new Three.MeshBasicMaterial({visible:false}));
 plane.rotation.x = -Math.PI/2;
 plane.userData.raycaster = true;
 mainScreen.add(plane);
@@ -229,8 +230,8 @@ class temporaryBlock{
         });
     }
     mesh(){
-		let temp = new Three.Mesh(this.geometry, this.material);
-		temp.userData.raycaster = true;
+        let temp = new Three.Mesh(this.geometry, this.material);
+        temp.userData.raycaster = true;
         return temp;
     }
 }
@@ -524,6 +525,7 @@ function main(){
     cameraOpt.pos.x = cameraOpt.anc.x + Math.sqrt(1200)*relCamPos.x/relCamPos.r;
     cameraOpt.pos.y = cameraOpt.anc.y + Math.sqrt(1200)*relCamPos.y/relCamPos.r;
     cameraOpt.pos.z = cameraOpt.anc.z + Math.sqrt(1200)*relCamPos.z/relCamPos.r;
+    cameraOpt.zoom = Math.min(2,Math.max(0.3, cameraOpt.zoom + 0.001 * mouse.scroll));
     pen.update();
     mainScreen.setCamera(cameraOpt);
     axis.setCamera({pos:{x: cameraOpt.pos.x - cameraOpt.anc.x, y: cameraOpt.pos.y - cameraOpt.anc.y, z: cameraOpt.pos.z - cameraOpt.anc.z},anc:{x:0,y:0,z:0},range:2});
