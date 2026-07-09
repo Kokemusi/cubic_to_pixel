@@ -92,6 +92,13 @@ class map{
         return shadowCoe;
     }
     meshMap(data, editing, boolean = true){
+        const faceDir = {
+            "(0,1,0)":{x:0, y:1, z:0},
+            "(1,0,0)":{x:1, y:0, z:0},
+            "(0,0,1)":{x:0, y:0, z:1},
+            "(-1,0,0)":{x:-1, y:0, z:0},
+            "(0,0,-1)":{x:0, y:0, z:-1}
+        };
         const material = new Three.MeshBasicMaterial({vertexColors : true, side : Three.DoubleSide});
         const geometry = new Three.BufferGeometry();
         const material_tl = new Three.MeshBasicMaterial({depthWrite:false, vertexColors : true, transparent:true, opacity:0.5, side : Three.DoubleSide});
@@ -115,6 +122,27 @@ class map{
                     this.show[parts] = 0;
                 }
                 parts_content.add(parts.replace(/[()]/g, ""), parts, parts == editing, this.show[parts]);
+                let planes = {};
+                for(const blocks in data[parts]){
+                    let block = data[parts][blocks];
+                    if(block.plane != undefined){
+                        for(const face in block.plane){
+                            let plane = block.plane[face];
+                            if(block.plane[face] != "default"){
+                                if(planes[plane] == undefined){
+                                    planes[plane] = {x:0,y:0,z:0,n:0};
+                                }
+                                console.log(plane);
+                                planes[plane].x = (planes[plane].x * planes[plane].n + faceDir[face].x)/(planes[plane].n + 1);
+                                planes[plane].y = (planes[plane].y * planes[plane].n + faceDir[face].y)/(planes[plane].n + 1);
+                                planes[plane].z = (planes[plane].z * planes[plane].n + faceDir[face].z)/(planes[plane].n + 1);
+                                planes[plane].n++;
+                            }else{
+                                delete block.plane[face];
+                            }
+                        }
+                    }
+                }
                 for(const block in data[parts]){
                     let x = data[parts][block].pos.x;
                     let y = data[parts][block].pos.y;
@@ -135,6 +163,14 @@ class map{
                             }else{
                                 c = new Three.Color(data[parts][block][face]);
                             }
+                            let face_norm = this.faceV[v];
+                            let face_plane = "default";
+                            if(data[parts][block].plane != undefined){
+                                if(data[parts][block].plane[face] != undefined){
+                                    face_norm = planes[data[parts][block].plane[face]];
+                                    face_plane = data[parts][block].plane[face];
+                                }
+                            }
                             for(let i = 0; i < 2 - Math.abs(this.faceV[v].x); i++){
                                 for(let j = 0; j < 2 - Math.abs(this.faceV[v].y); j++){
                                     for(let k = 0; k < 2 - Math.abs(this.faceV[v].z); k++){
@@ -142,7 +178,7 @@ class map{
                                             apexes.push(x + i + Math.max(0, this.faceV[v].x));
                                             apexes.push(y + j + Math.max(0, this.faceV[v].y));
                                             apexes.push(z + k + Math.max(0, this.faceV[v].z));
-                                            colors.push(c.r * this.getShadow(this.faceV[v]), c.g * this.getShadow(this.faceV[v]), c.b * this.getShadow(this.faceV[v]));
+                                            colors.push(c.r * this.getShadow(face_norm), c.g * this.getShadow(face_norm), c.b * this.getShadow(face_norm));
                                         }else if(this.show[parts] == 1){
                                             apexes_tl.push(x + i + Math.max(0, this.faceV[v].x));
                                             apexes_tl.push(y + j + Math.max(0, this.faceV[v].y));
@@ -153,8 +189,8 @@ class map{
                                 }
                             }
                             if(this.show[parts] == 0){
-                                faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c});
-                                faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c});
+                                faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c, plane:face_plane});
+                                faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c, plane:face_plane});
                                 indices.push(faceStart + 0);
                                 indices.push(faceStart + 1);
                                 indices.push(faceStart + 3);

@@ -53,12 +53,28 @@
     background : transparent;
     border-right:1px solid #afafaf;
     white-space: nowrap;
+    display:flex;
+    align-items: center;
+}
+
+input[type = "radio"]:checked + label{
+    box-shadow: inset black 1px 1px;
+    background : rgba(0,0,0,0.1);
+    filter: brightness(75%);
 }
 
 input[type = "radio"]:checked + label img{
     box-shadow: inset black 1px 1px;
     background : rgba(0,0,0,0.1);
     filter: brightness(75%);
+}
+
+#input_dissolve_id{
+    border: none;
+    outline: none;
+    background: rgba(0,0,0,0.05);
+    box-shadow: inset black 1px 1px;
+    height:32px;
 }
 
 #button_toggle_edge{

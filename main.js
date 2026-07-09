@@ -46,6 +46,7 @@ let hitColor;
 let hitFace;
 let hitObj;
 let hitIndex;
+let hitPlane;
 let phitIndex;
 let placeIndex;
 let pplaceIndex;
@@ -64,6 +65,7 @@ let Fill = {
         this.p2 = {x:0, y:0, z:0, set:0};
     }
 };
+let planeID;
 //必要な関数
 
 function sceneUpdate(renderer, new_map, edge){
@@ -255,6 +257,7 @@ function main(){
         if(hitPos.length > 0){
             hitColor = new Three.Color(0,0,0);
 			hitObj = undefined;
+            hitPlane = undefined;
 			if(hitPos[0].object.geometry.type == "BufferGeometry"){
 				hitIndex = mesh_map.info[hitPos[0].faceIndex].pos;
 				hitObj = mesh_map.info[hitPos[0].faceIndex].parts;
@@ -262,6 +265,7 @@ function main(){
 				grid.place = {x:grid.hit.x + mesh_map.info[hitPos[0].faceIndex].face.x, y:grid.hit.y + mesh_map.info[hitPos[0].faceIndex].face.y, z:grid.hit.z + mesh_map.info[hitPos[0].faceIndex].face.z};
 				hitFace = "(" + mesh_map.info[hitPos[0].faceIndex].face.x + "," + mesh_map.info[hitPos[0].faceIndex].face.y + "," + mesh_map.info[hitPos[0].faceIndex].face.z + ")";
 				hitColor = mesh_map.info[hitPos[0].faceIndex].color;
+                hitPlane = mesh_map.info[hitPos[0].faceIndex].plane;
 			}else if(hitPos[0].object.geometry.type == "BoxGeometry"){
 				grid.hit.x = hitPos[0].object.position.x-0.5;
 				grid.hit.y = hitPos[0].object.position.y-0.5;
@@ -277,7 +281,7 @@ function main(){
 			}
 			hitIndex = "(" + grid.hit.x + "," + grid.hit.y + "," + grid.hit.z + ")";
 			placeIndex = "(" + grid.place.x + "," + grid.place.y + "," + grid.place.z + ")";
-			document.getElementById("div_text_position").textContent = "Grid(hit: " + hitIndex + ", place: " + placeIndex + ", hit part: " + hitObj;
+			document.getElementById("div_text_position").textContent = "Grid(hit: " + hitIndex + ", place: " + placeIndex + ", hit part: " + hitObj + ", hit plane: " + hitPlane;
         }
         if(mouse.status == 1){
             if(mouse.button == 1){
@@ -365,7 +369,6 @@ function main(){
                                 change = 1;
                             }
                         }
-                        
                     }
                 }else if(pen.mode == "brush"){
                     if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
@@ -377,10 +380,20 @@ function main(){
                                     sceneUpdate(mainScreen, map, show_edge == 1);
                                     change = 1;
                                 }
-
                             }
                         }
-
+                    }
+                }else if(pen.mode == "dissolve"){
+                    if((hitObj == pen.target || pen.target == "all") && hitPos[0].object.geometry.type == "BufferGeometry"){
+                        if(!(hitObj == "Plane" || hitObj == "Temporary")){
+                            if(map[hitObj][hitIndex].plane == undefined){
+                                map[hitObj][hitIndex].plane = {};
+                            }
+                            map[hitObj][hitIndex].plane[hitFace] = document.getElementById("input_dissolve_id").value;
+                            sceneUpdate(mainScreen, map, show_edge == 1);
+                            change = 1;
+                            clickCheck = 1;
+                        }
                     }
                 }else if(pen.mode == "fill"){
                     if(clickCheck == 0){
