@@ -88,7 +88,9 @@ class map{
         let dot = (nv.x * this.sunPos.x + nv.y * this.sunPos.y + nv.z * this.sunPos.z);
         let size = Math.sqrt(nv.x ** 2 + nv.y ** 2 + nv.z **2);
         dot /= size;
-        let shadowCoe = (dot+3)/4;
+        dot += 1;
+        dot /= 2;
+        let shadowCoe = (dot + 1)/2;
         return shadowCoe;
     }
     meshMap(data, editing, boolean = true){

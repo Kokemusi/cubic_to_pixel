@@ -251,8 +251,6 @@ class preview{
         }
         //情報を奥から順番にする
         faces.sort((a,b)=>(this.compare(a, b)));
-		console.log(face_group);
-		console.log(faces);
         //canvas設定
         this.canvas.width = this.range.max.x - this.range.min.x + this.dot;
         this.canvas.height = this.range.max.y - this.range.min.y + this.dot * 2;
