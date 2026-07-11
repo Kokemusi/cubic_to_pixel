@@ -417,7 +417,6 @@ function main(){
                                     for(let z = Math.min(Fill.p1.z, Fill.p2.z); z <= Math.max(Fill.p1.z, Fill.p2.z); z++){
                                         const fillIndex = "(" + x + "," + y + "," + z + ")";
                                         if(NotInMap(fillIndex, map) && ((x-Fill.p1.x)*(x-Fill.p2.x)*(y-Fill.p1.y)*(y-Fill.p2.y)*(z-Fill.p1.z)*(z-Fill.p2.z) == 0)){
-                                            console.log();
                                             if(hitObj == "Plane" || hitObj == "Temporary"){
                                                 if(pen.target != "all"){
                                                     map[pen.target][fillIndex] = {

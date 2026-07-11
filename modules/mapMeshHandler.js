@@ -134,7 +134,6 @@ class map{
                                 if(planes[plane] == undefined){
                                     planes[plane] = {x:0,y:0,z:0,n:0};
                                 }
-                                console.log(plane);
                                 planes[plane].x = (planes[plane].x * planes[plane].n + faceDir[face].x)/(planes[plane].n + 1);
                                 planes[plane].y = (planes[plane].y * planes[plane].n + faceDir[face].y)/(planes[plane].n + 1);
                                 planes[plane].z = (planes[plane].z * planes[plane].n + faceDir[face].z)/(planes[plane].n + 1);
