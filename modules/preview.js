@@ -84,9 +84,120 @@ class preview{
         let shadowCoe = (dot+3)/4;
         return shadowCoe;
     }
-    update(map){
+    update(face_group){
         let faces = [];
-        let face_group = {"default":[]};
+		let faceShow = [
+			{
+				"(0,1,0)":1,
+				"(1,0,0)":1,
+				"(0,0,1)":1,
+				"(-1,0,0)":0,
+				"(0,0,-1)":0
+        	},
+			{
+				"(0,1,0)":1,
+				"(1,0,0)":0,
+				"(0,0,1)":1,
+				"(-1,0,0)":1,
+				"(0,0,-1)":0
+        	},
+			{
+				"(0,1,0)":1,
+				"(1,0,0)":0,
+				"(0,0,1)":0,
+				"(-1,0,0)":1,
+				"(0,0,-1)":1
+        	},
+			{
+				"(0,1,0)":1,
+				"(1,0,0)":1,
+				"(0,0,1)":0,
+				"(-1,0,0)":0,
+				"(0,0,-1)":1
+        	},
+		];
+        this.range = {min:{x:0,y:0},max:{x:0,y:0}};
+        //面の3次元上の位置と影付きの色を計算
+        for(const group in face_group){
+            for(const face in face_group[group]){
+                let color = new Three.Color(face_group[group][face].color);
+                color.convertLinearToSRGB();
+                let faceInfo = {
+                    pos:face_group[group][face].pos, 
+                    color:{
+                        r:255 * color.r * this.getShadow(face_group[group][face].face),
+                        g:255 * color.g * this.getShadow(face_group[group][face].face),
+                        b:255 * color.b * this.getShadow(face_group[group][face].face),
+                        a:255
+                    },
+					face:face_group[group][face].face,
+					apex:face_group[group][face].apex,
+					face_name:face_group[group][face].face_name
+                }
+                if(this.part[face_group[group][face].part] == 0){
+					if(faceShow[((this.dir-this.view) % 4 + 4) % 4][faceInfo.face_name] == 1){
+						faces.push(faceInfo);
+						if(this.range.min.x > this.dot * this.get2dPos(face_group[group][face].pos).x){
+							this.range.min.x = this.dot * this.get2dPos(face_group[group][face].pos).x;
+						}else if(this.range.min.y > this.dot * this.get2dPos(face_group[group][face].pos).y){
+							this.range.min.y = this.dot * this.get2dPos(face_group[group][face].pos).y;
+						}else if(this.range.max.x < this.dot * this.get2dPos(face_group[group][face].pos).x){
+							this.range.max.x = this.dot * this.get2dPos(face_group[group][face].pos).x;
+						}else if(this.range.max.y < this.dot * this.get2dPos(face_group[group][face].pos).y){
+							this.range.max.y = this.dot * this.get2dPos(face_group[group][face].pos).y;
+						}
+					}
+                }else if(this.overlap == 1){
+                    faceInfo.color.a = 0;
+                    faces.push(faceInfo);
+                }
+            }
+        }
+        //情報を奥から順番にする
+        faces.sort((a,b)=>(this.compare(a, b)));
+        //canvas設定
+        this.canvas.width = this.range.max.x - this.range.min.x + this.dot;
+        this.canvas.height = this.range.max.y - this.range.min.y + this.dot * 2;
+        this.createImage(faces);
+    }
+    getPos(x, z){
+		let rx = x*Math.round(Math.cos((this.dir-this.view)*Math.PI/2))+z*Math.round(Math.sin((this.dir-this.view)*Math.PI/2));
+		let rz = -x*Math.round(Math.sin((this.dir-this.view)*Math.PI/2))+z*Math.round(Math.cos((this.dir-this.view)*Math.PI/2));
+        return {x:rx, z:rz};
+    }
+    toggleShadow(){
+        this.shadow = 1 - this.shadow;
+    }
+    toggleOverlap(){
+        this.overlap = 1 - this.overlap;
+    }
+}
+
+class Previews{
+	constructor(margeID, dot = 4){
+		this.marge = document.getElementById(margeID);
+		this.ctx = this.marge.getContext("2d", {willReadFrequently:true});
+		this.canvas = {};
+		this.preview = {};
+		this.dot = dot;
+	}
+	createPreviewCanvas(){
+		let ViewDict = ["se"];
+		let DirDict = ["0", "1", "2", "3"];
+		
+		for(let i = 0; i < DirDict.length; i++){
+			this.canvas[DirDict[i]] = {};
+			this.preview[DirDict[i]] = {};
+			for(let j = 0; j < ViewDict.length; j++){
+				this.preview[DirDict[i]][ViewDict[j]] = new preview(i, this.dot, j);
+				this.canvas[DirDict[i]][ViewDict[j]] = this.preview[DirDict[i]][ViewDict[j]].canvas;
+				this.canvas[DirDict[i]][ViewDict[j]].style.position = "absolute";
+				this.canvas[DirDict[i]][ViewDict[j]].id = "Preview_" + DirDict[i] + "_" + ViewDict[j];
+			}
+		}
+	}
+	update(map){
+		let face_group = {"default":[]};
         let face_nv = {};//{x:x,y:y,z:z,n:n}
         let faceV = {
             "(0,1,0)":{x:0.5, y:1, z:0.5},
@@ -134,38 +245,7 @@ class preview{
 				{x:-0.5, y:0.5, z:0}
 			]
 		};
-		let faceShow = [
-			{
-				"(0,1,0)":1,
-				"(1,0,0)":1,
-				"(0,0,1)":1,
-				"(-1,0,0)":0,
-				"(0,0,-1)":0
-        	},
-			{
-				"(0,1,0)":1,
-				"(1,0,0)":0,
-				"(0,0,1)":1,
-				"(-1,0,0)":1,
-				"(0,0,-1)":0
-        	},
-			{
-				"(0,1,0)":1,
-				"(1,0,0)":0,
-				"(0,0,1)":0,
-				"(-1,0,0)":1,
-				"(0,0,-1)":1
-        	},
-			{
-				"(0,1,0)":1,
-				"(1,0,0)":1,
-				"(0,0,1)":0,
-				"(-1,0,0)":0,
-				"(0,0,-1)":1
-        	},
-		];
-        this.range = {min:{x:0,y:0},max:{x:0,y:0}};
-        //面のグループ作成+平均法線を計算
+		//面のグループ作成+平均法線を計算
         for(const part in map){
             if(part != "version"){
                 for(const pos in map[part]){
@@ -189,19 +269,17 @@ class preview{
 								y:box.pos.y + faceV[face].y,
 								z:box.pos.z + faceV[face].z,
 							}
-							let face_data = {pos:face_pos, color:face_color, face:faceDir[face], part:part, apex:faceApex[face]};
-							if(faceShow[((this.dir-this.view) % 4 + 4) % 4][face] == 1){
-								if(plane_id != undefined){
-									if(face_group[plane_id] == undefined) face_group[plane_id] = [];
-									if(face_nv[plane_id] == undefined) face_nv[plane_id] = {x:0,y:0,z:0,n:0};
-									face_group[plane_id].push(face_data);
-									face_nv[plane_id].x = (face_nv[plane_id].x * face_nv[plane_id].n + face_data.face.x) / (face_nv[plane_id].n + 1);
-									face_nv[plane_id].y = (face_nv[plane_id].y * face_nv[plane_id].n + face_data.face.y) / (face_nv[plane_id].n + 1);
-									face_nv[plane_id].z = (face_nv[plane_id].z * face_nv[plane_id].n + face_data.face.z) / (face_nv[plane_id].n + 1);
-									face_nv[plane_id].n++;
-								}else{
-									face_group.default.push(face_data);
-								}
+							let face_data = {pos:face_pos, color:face_color, face:faceDir[face], part:part, apex:faceApex[face], face_name:face};
+							if(plane_id != undefined){
+								if(face_group[plane_id] == undefined) face_group[plane_id] = [];
+								if(face_nv[plane_id] == undefined) face_nv[plane_id] = {x:0,y:0,z:0,n:0};
+								face_group[plane_id].push(face_data);
+								face_nv[plane_id].x = (face_nv[plane_id].x * face_nv[plane_id].n + face_data.face.x) / (face_nv[plane_id].n + 1);
+								face_nv[plane_id].y = (face_nv[plane_id].y * face_nv[plane_id].n + face_data.face.y) / (face_nv[plane_id].n + 1);
+								face_nv[plane_id].z = (face_nv[plane_id].z * face_nv[plane_id].n + face_data.face.z) / (face_nv[plane_id].n + 1);
+								face_nv[plane_id].n++;
+							}else{
+								face_group.default.push(face_data);
 							}
 						}
                     }
@@ -216,87 +294,9 @@ class preview{
                 }
             }
         }
-        //面の3次元上の位置と影付きの色を計算
-        for(const group in face_group){
-            for(const face in face_group[group]){
-                let color = new Three.Color(face_group[group][face].color);
-                color.convertLinearToSRGB();
-                let faceInfo = {
-                    pos:face_group[group][face].pos, 
-                    color:{
-                        r:255 * color.r * this.getShadow(face_group[group][face].face),
-                        g:255 * color.g * this.getShadow(face_group[group][face].face),
-                        b:255 * color.b * this.getShadow(face_group[group][face].face),
-                        a:255
-                    },
-					face:face_group[group][face].face,
-					apex:face_group[group][face].apex
-                }
-                if(this.part[face_group[group][face].part] == 0){
-                    faces.push(faceInfo);
-                    if(this.range.min.x > this.dot * this.get2dPos(face_group[group][face].pos).x){
-                        this.range.min.x = this.dot * this.get2dPos(face_group[group][face].pos).x;
-                    }else if(this.range.min.y > this.dot * this.get2dPos(face_group[group][face].pos).y){
-                        this.range.min.y = this.dot * this.get2dPos(face_group[group][face].pos).y;
-                    }else if(this.range.max.x < this.dot * this.get2dPos(face_group[group][face].pos).x){
-                        this.range.max.x = this.dot * this.get2dPos(face_group[group][face].pos).x;
-                    }else if(this.range.max.y < this.dot * this.get2dPos(face_group[group][face].pos).y){
-                        this.range.max.y = this.dot * this.get2dPos(face_group[group][face].pos).y;
-                    }
-                }else if(this.overlap == 1){
-                    faceInfo.color.a = 0;
-                    faces.push(faceInfo);
-                }
-            }
-        }
-        //情報を奥から順番にする
-        faces.sort((a,b)=>(this.compare(a, b)));
-        //canvas設定
-        this.canvas.width = this.range.max.x - this.range.min.x + this.dot;
-        this.canvas.height = this.range.max.y - this.range.min.y + this.dot * 2;
-
-        this.createImage(faces);
-    }
-    getPos(x, z){
-		let rx = x*Math.round(Math.cos((this.dir-this.view)*Math.PI/2))+z*Math.round(Math.sin((this.dir-this.view)*Math.PI/2));
-		let rz = -x*Math.round(Math.sin((this.dir-this.view)*Math.PI/2))+z*Math.round(Math.cos((this.dir-this.view)*Math.PI/2));
-        return {x:rx, z:rz};
-    }
-    toggleShadow(){
-        this.shadow = 1 - this.shadow;
-    }
-    toggleOverlap(){
-        this.overlap = 1 - this.overlap;
-    }
-}
-
-class Previews{
-	constructor(margeID, dot = 4){
-		this.marge = document.getElementById(margeID);
-		this.ctx = this.marge.getContext("2d", {willReadFrequently:true});
-		this.canvas = {};
-		this.preview = {};
-		this.dot = dot;
-	}
-	createPreviewCanvas(){
-		let ViewDict = ["se", "ne", "nw", "sw"];
-		let DirDict = ["0", "1", "2", "3"];
-		
-		for(let i = 0; i < DirDict.length; i++){
-			this.canvas[DirDict[i]] = {};
-			this.preview[DirDict[i]] = {};
-			for(let j = 0; j < ViewDict.length; j++){
-				this.preview[DirDict[i]][ViewDict[j]] = new preview(i, this.dot, j);
-				this.canvas[DirDict[i]][ViewDict[j]] = this.preview[DirDict[i]][ViewDict[j]].canvas;
-				this.canvas[DirDict[i]][ViewDict[j]].style.position = "absolute";
-				this.canvas[DirDict[i]][ViewDict[j]].id = "Preview_" + DirDict[i] + "_" + ViewDict[j];
-			}
-		}
-	}
-	update(map){
 		for(const dir in this.preview){
 			for(const view in this.preview[dir]){
-				this.preview[dir][view].update(map);
+				this.preview[dir][view].update(face_group);
 			}
 		}
 	}

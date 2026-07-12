@@ -6,7 +6,9 @@ import * as MM from "MapMesh";
 import * as PV from "Preview";
 
 //変数とか宣言
-let map = {version:"0628"};
+let map = {
+	"version": "0628"
+};
 let editingPart = undefined;
 let pen = {
     target:undefined,
@@ -47,6 +49,9 @@ let hitFace;
 let hitObj;
 let hitIndex;
 let hitPlane;
+let apexIndex;
+let faceNorm;
+let faceNum;
 let phitIndex;
 let placeIndex;
 let pplaceIndex;
@@ -104,6 +109,24 @@ function sceneUpdate(renderer, new_map, edge){
             });
         }
     }
+    renderer.add(mesh_map.mesh);
+    renderer.add(mesh_map.mesh_tl);
+    if(edge) renderer.add(mesh_map.edge, true);
+}
+function changeFaceColor(renderer, change, edge){
+    renderer.remove(mesh_map.mesh);
+    renderer.remove(mesh_map.mesh_tl);
+    renderer.remove(mesh_map.edge, true);
+    mesh_map.changeFaceColor(change.color, change.index, change.norm);
+    renderer.add(mesh_map.mesh);
+    renderer.add(mesh_map.mesh_tl);
+    if(edge) renderer.add(mesh_map.edge, true);
+}
+function changeColor(renderer, change, edge){
+    renderer.remove(mesh_map.mesh);
+    renderer.remove(mesh_map.mesh_tl);
+    renderer.remove(mesh_map.edge, true);
+    mesh_map.changeColor(change.color, change.index, change.faceNum);
     renderer.add(mesh_map.mesh);
     renderer.add(mesh_map.mesh_tl);
     if(edge) renderer.add(mesh_map.edge, true);
@@ -254,6 +277,8 @@ function main(){
         hitPos = mainScreen.castRay(mouse.pos());
         hitColor = undefined;
         hitObj = undefined;
+        apexIndex = {plane:undefined,block:undefined};
+        faceNorm = undefined;
         if(hitPos.length > 0){
             hitColor = new Three.Color(0,0,0);
 			hitObj = undefined;
@@ -266,6 +291,10 @@ function main(){
 				hitFace = "(" + mesh_map.info[hitPos[0].faceIndex].face.x + "," + mesh_map.info[hitPos[0].faceIndex].face.y + "," + mesh_map.info[hitPos[0].faceIndex].face.z + ")";
 				hitColor = mesh_map.info[hitPos[0].faceIndex].color;
                 hitPlane = mesh_map.info[hitPos[0].faceIndex].plane;
+                apexIndex.plane = mesh_map.info[hitPos[0].faceIndex].faceApexIndex;
+                apexIndex.block = mesh_map.info[hitPos[0].faceIndex].blockApexIndex;
+                faceNorm = mesh_map.info[hitPos[0].faceIndex].face;
+                faceNum = mesh_map.info[hitPos[0].faceIndex].faceNum;
 			}else if(hitPos[0].object.geometry.type == "BoxGeometry"){
 				grid.hit.x = hitPos[0].object.position.x-0.5;
 				grid.hit.y = hitPos[0].object.position.y-0.5;
@@ -365,7 +394,8 @@ function main(){
                                         delete map[hitObj][hitIndex][face];
                                     }
                                 }
-                                sceneUpdate(mainScreen, map, show_edge == 1);
+                                //sceneUpdate(mainScreen, map, show_edge == 1);
+                                changeColor(mainScreen, {color:pen.color, index:apexIndex.block, norm:faceNorm, faceNum:faceNum}, show_edge == 1);
                                 change = 1;
                             }
                         }
@@ -377,7 +407,8 @@ function main(){
                             if((hitObj == pen.target || pen.target == "all")){
                                 if(map[hitObj][hitIndex][hitFace] != pen.color){
                                     map[hitObj][hitIndex][hitFace] = pen.color;
-                                    sceneUpdate(mainScreen, map, show_edge == 1);
+                                    //sceneUpdate(mainScreen, map, show_edge == 1);
+                                    changeFaceColor(mainScreen, {color:pen.color, index:apexIndex.plane, norm:faceNorm, faceNum:faceNum}, show_edge == 1);
                                     change = 1;
                                 }
                             }
@@ -540,7 +571,7 @@ function main(){
     cameraOpt.zoom = Math.min(2,Math.max(0.3, cameraOpt.zoom + 0.001 * mouse.scroll));
     pen.update();
     mainScreen.setCamera(cameraOpt);
-    axis.setCamera({pos:{x: cameraOpt.pos.x - cameraOpt.anc.x, y: cameraOpt.pos.y - cameraOpt.anc.y, z: cameraOpt.pos.z - cameraOpt.anc.z},anc:{x:0,y:0,z:0},range:2});
+    axis.setCamera({pos:{x: cameraOpt.pos.x - cameraOpt.anc.x, y: cameraOpt.pos.y - cameraOpt.anc.y, z: cameraOpt.pos.z - cameraOpt.anc.z},anc:{x:0,y:0,z:0},range:2,zoom:1});
     axis.render();
     mainScreen.render();
 }
