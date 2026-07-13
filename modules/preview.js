@@ -74,8 +74,8 @@ class preview{
 			}
 			range.x = range.Mx - range.mx;
 			range.y = range.My - range.my;
-			for(let i = - this.dot * range.x / 2; i < this.dot * range.x / 2; i++){
-				for(let j = - this.dot * range.y / 2; j < this.dot * range.y / 2; j++){
+			for(let i = - Math.round(this.dot * range.x / 2); i <  Math.round(this.dot * range.x / 2); i++){
+				for(let j = - Math.round(this.dot * range.y / 2); j < Math.round(this.dot * range.y / 2); j++){
 					let ix = Math.floor(x * this.dot) + i - this.range.min.x + this.dot/2;
 					let iy = Math.floor(y * this.dot) + j - this.range.min.y + this.dot/2;
 					this.setColor(iy * this.canvas.width + ix, c.r, c.g, c.b, c.a);
@@ -124,7 +124,7 @@ class preview{
     }
     update(face_group){
         let faces = [];
-        this.range = {min:{x:0,y:0},max:{x:0,y:0}};
+        this.range = {min:{x:Infinity,y:Infinity},max:{x:-Infinity,y:-Infinity}};
         //面の3次元上の位置と影付きの色を計算
         for(const group in face_group){
             for(const face in face_group[group]){
@@ -182,7 +182,7 @@ class preview{
 		}
         //canvas設定
         this.canvas.width = this.range.max.x - this.range.min.x + this.dot;
-        this.canvas.height = this.range.max.y - this.range.min.y + this.dot * 2;
+        this.canvas.height = this.range.max.y - this.range.min.y + this.dot;
         this.createImage(faces);
     }
     getPos(x, z){

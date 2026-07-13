@@ -158,7 +158,7 @@ class map{
                     }
                     for(const v in this.faceV){
                         let sideIndex = "(" + (x + this.faceV[v].x) + "," + (y + this.faceV[v].y) + "," + (z + this.faceV[v].z) + ")";
-                        if(!Object.keys(data[parts]).includes(sideIndex)){
+                        if(!(sideIndex in data[parts])){
                             let face = "(" + (this.faceV[v].x) + "," + (this.faceV[v].y) + "," + (this.faceV[v].z) + ")";
                             let faceStart = undefined;
                             if(this.show[parts] == 0){
@@ -166,7 +166,7 @@ class map{
                             }else if(this.show[parts] == 1){
                                 faceStart = this.apexes_tl.length/3;
                             }
-                            if(!Object.keys(data[parts][block]).includes(face)){
+                            if(!(face in data[parts][block])){
                                 c = new Three.Color(data[parts][block].color);
                             }else{
                                 c = new Three.Color(data[parts][block][face]);
@@ -344,7 +344,7 @@ class map{
         }
         for(const v in this.faceV){
             let sideIndex = "(" + (x + this.faceV[v].x) + "," + (y + this.faceV[v].y) + "," + (z + this.faceV[v].z) + ")";
-            if(!Object.keys(data[parts]).includes(sideIndex)){
+            if(!(sideIndex in data[parts])){
                 let face = "(" + (this.faceV[v].x) + "," + (this.faceV[v].y) + "," + (this.faceV[v].z) + ")";
                 let faceStart = undefined;
                 if(this.show[parts] == 0){

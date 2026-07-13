@@ -386,7 +386,7 @@ function main(){
                                 drawOn = pen.target
                             }
                             //sceneUpdate(mainScreen, map, show_edge == 1);
-                            addBlock(mainScreen, map, map[pen.target][placeIndex], drawOn, show_edge == 1);
+                            addBlock(mainScreen, map, map[drawOn][placeIndex], drawOn, show_edge == 1);
                         }else{
                             if(clickCheck == 0) window.alert("編集対象のパーツが必要です");
                         }
