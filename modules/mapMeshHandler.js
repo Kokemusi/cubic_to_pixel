@@ -93,7 +93,7 @@ class map{
         let shadowCoe = (dot + 1)/2;
         return shadowCoe;
     }
-    meshMap(data, editing, boolean = true){
+    meshMap(data, editing, boolean = true){ 
         const faceDir = {
             "(0,1,0)":{x:0, y:1, z:0},
             "(1,0,0)":{x:1, y:0, z:0},
@@ -209,6 +209,7 @@ class map{
                                 this.indices.push(faceStart + 0);
                                 this.indices.push(faceStart + 2);
                                 this.indices.push(faceStart + 3);
+                                faceNum.push(this.faceV[v]);
                             }else if(this.show[parts] == 1){
                                 this.indices_tl.push(faceStart + 0);
                                 this.indices_tl.push(faceStart + 1);
@@ -217,7 +218,6 @@ class map{
                                 this.indices_tl.push(faceStart + 2);
                                 this.indices_tl.push(faceStart + 3);
                             }
-                            faceNum.push(this.faceV[v]);
                         }
                         if(this.show[parts] < 2){
                             for(let si = 0; si < 4; si++){
@@ -310,6 +310,108 @@ class map{
             this.colors[3 * (index + 4 * i + 3) + 1] = c.g * shadow;
             this.colors[3 * (index + 4 * i + 3) + 2] = c.b * shadow;
             i++;
+        }
+        const material = new Three.MeshBasicMaterial({vertexColors : true, side : Three.DoubleSide});
+        const geometry = new Three.BufferGeometry();
+        const material_tl = new Three.MeshBasicMaterial({depthWrite:false, vertexColors : true, transparent:true, opacity:0.5, side : Three.DoubleSide});
+        const geometry_tl = new Three.BufferGeometry();
+        const edgeMaterial = new Three.LineBasicMaterial({color:0x000000});
+        const edgeGeometry = new Three.BufferGeometry();
+        geometry.setAttribute("position", new Three.Float32BufferAttribute(this.apexes, 3));
+        geometry.setAttribute("color", new Three.Float32BufferAttribute(this.colors, 3));
+        geometry.setIndex(this.indices);
+        geometry_tl.setAttribute("position", new Three.Float32BufferAttribute(this.apexes_tl, 3));
+        geometry_tl.setAttribute("color", new Three.Float32BufferAttribute(this.colors_tl, 3));
+        geometry_tl.setIndex(this.indices_tl);
+        edgeGeometry.setAttribute("position", new Three.Float32BufferAttribute(this.ends, 3));
+        this.mesh = new Three.Mesh(geometry, material);
+        this.mesh.userData.raycaster = true;
+        this.mesh_tl = new Three.Mesh(geometry_tl, material_tl);
+        this.edge = new Three.LineSegments(edgeGeometry, edgeMaterial);
+        this.info = this.faceInfo;
+        return {mesh:this.mesh, mesh_tl:this.mesh_tl, edge:this.edge, info:this.faceInfo};
+    }
+    addBlock(block, parts, data){
+        let x = block.pos.x;
+        let y = block.pos.y;
+        let z = block.pos.z;
+        let c;
+        let faceNum = [];
+        let infoIndex = this.faceInfo.length;
+        let blockStart = undefined;
+        if(this.show[parts] == 0){
+            blockStart = this.apexes.length/3;
+        }
+        for(const v in this.faceV){
+            let sideIndex = "(" + (x + this.faceV[v].x) + "," + (y + this.faceV[v].y) + "," + (z + this.faceV[v].z) + ")";
+            if(!Object.keys(data[parts]).includes(sideIndex)){
+                let face = "(" + (this.faceV[v].x) + "," + (this.faceV[v].y) + "," + (this.faceV[v].z) + ")";
+                let faceStart = undefined;
+                if(this.show[parts] == 0){
+                    faceStart = this.apexes.length/3;
+                }else if(this.show[parts] == 1){
+                    faceStart = this.apexes_tl.length/3;
+                }
+                if(!Object.keys(block).includes(face)){
+                    c = new Three.Color(block.color);
+                }else{
+                    c = new Three.Color(block[face]);
+                }
+                let face_norm = this.faceV[v];
+                let face_plane = "default";
+                for(let i = 0; i < 2 - Math.abs(this.faceV[v].x); i++){
+                    for(let j = 0; j < 2 - Math.abs(this.faceV[v].y); j++){
+                        for(let k = 0; k < 2 - Math.abs(this.faceV[v].z); k++){
+                            if(this.show[parts] == 0){
+                                this.apexes.push(
+                                    x + i + Math.max(0, this.faceV[v].x),
+                                    y + j + Math.max(0, this.faceV[v].y),
+                                    z + k + Math.max(0, this.faceV[v].z)
+                                );
+                                this.colors.push(c.r * this.getShadow(face_norm), c.g * this.getShadow(face_norm), c.b * this.getShadow(face_norm));
+                            }else if(this.show[parts] == 1){
+                                this.apexes_tl.push(
+                                    x + i + Math.max(0, this.faceV[v].x),
+                                    y + j + Math.max(0, this.faceV[v].y),
+                                    z + k + Math.max(0, this.faceV[v].z)
+                                );
+                                this.colors_tl.push(c.r, c.g, c.b);
+                            }
+                        }
+                    }
+                }
+                if(this.show[parts] == 0){
+                    this.faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c, plane:face_plane, faceApexIndex:faceStart, blockApexIndex:blockStart});
+                    this.faceInfo.push({parts:parts, pos:"(" + x + "," + y + "," + z + ")", face:this.faceV[v], color:c, plane:face_plane, faceApexIndex:faceStart, blockApexIndex:blockStart});
+                    this.indices.push(faceStart + 0);
+                    this.indices.push(faceStart + 1);
+                    this.indices.push(faceStart + 3);
+                    this.indices.push(faceStart + 0);
+                    this.indices.push(faceStart + 2);
+                    this.indices.push(faceStart + 3);
+                    faceNum.push(this.faceV[v]);
+                }else if(this.show[parts] == 1){
+                    this.indices_tl.push(faceStart + 0);
+                    this.indices_tl.push(faceStart + 1);
+                    this.indices_tl.push(faceStart + 3);
+                    this.indices_tl.push(faceStart + 0);
+                    this.indices_tl.push(faceStart + 2);
+                    this.indices_tl.push(faceStart + 3);
+                }
+            }
+            if(this.show[parts] < 2){
+                for(let si = 0; si < 4; si++){
+                    for(let i = si; i < 2 + si; i++){
+                        this.ends.push(x + this.facePc[this.faceL[v][i%4]].x);
+                        this.ends.push(y + this.facePc[this.faceL[v][i%4]].y);
+                        this.ends.push(z + this.facePc[this.faceL[v][i%4]].z);
+                    }
+                }
+            }
+        }
+        for(let i = 0; i < faceNum.length; i++){
+            this.faceInfo[infoIndex + 2 * i + 0].faceNum = faceNum;
+            this.faceInfo[infoIndex + 2 * i + 1].faceNum = faceNum;
         }
         const material = new Three.MeshBasicMaterial({vertexColors : true, side : Three.DoubleSide});
         const geometry = new Three.BufferGeometry();

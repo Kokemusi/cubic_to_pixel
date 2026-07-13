@@ -131,6 +131,15 @@ function changeColor(renderer, change, edge){
     renderer.add(mesh_map.mesh_tl);
     if(edge) renderer.add(mesh_map.edge, true);
 }
+function addBlock(renderer, new_map, block, part, edge){
+    renderer.remove(mesh_map.mesh);
+    renderer.remove(mesh_map.mesh_tl);
+    renderer.remove(mesh_map.edge, true);
+    mesh_map.addBlock(block, part, new_map);
+    renderer.add(mesh_map.mesh);
+    renderer.add(mesh_map.mesh_tl);
+    if(edge) renderer.add(mesh_map.edge, true);
+}
 
 async function download_data(data, type = "c2d"){
     const name = document.getElementById("input_file_name").value;
@@ -162,6 +171,10 @@ function NotInMap(key, MAP){
 			if(Object.keys(MAP[part]).includes(key)) return false;
 		}
 	}
+	return true;
+}
+function NotInPart(key, MAP, part){
+	if(Object.keys(MAP[part]).includes(key)) return false;
 	return true;
 }
 
@@ -346,6 +359,7 @@ function main(){
                         }
                         pen.previous = placeIndex;
                         if(pen.target){
+                            let drawOn = undefined;
                             if(pen.target == "all"){
                                 if(Object.keys(map).length == 1){
                                     if(clickCheck == 0) window.alert("編集対象のパーツが必要です");
@@ -358,6 +372,7 @@ function main(){
                                         },
                                         color:pen.color
                                     };
+                                    drawOn = hitObj;
                                 }
                             }else{
                                 map[pen.target][placeIndex] = {
@@ -368,8 +383,10 @@ function main(){
                                     },
                                     color:pen.color
                                 };
+                                drawOn = pen.target
                             }
-                            sceneUpdate(mainScreen, map, show_edge == 1);
+                            //sceneUpdate(mainScreen, map, show_edge == 1);
+                            addBlock(mainScreen, map, map[pen.target][placeIndex], drawOn, show_edge == 1);
                         }else{
                             if(clickCheck == 0) window.alert("編集対象のパーツが必要です");
                         }
@@ -447,7 +464,7 @@ function main(){
                                 for(let y = Math.min(Fill.p1.y, Fill.p2.y); y <= Math.max(Fill.p1.y, Fill.p2.y); y++){
                                     for(let z = Math.min(Fill.p1.z, Fill.p2.z); z <= Math.max(Fill.p1.z, Fill.p2.z); z++){
                                         const fillIndex = "(" + x + "," + y + "," + z + ")";
-                                        if(NotInMap(fillIndex, map) && ((x-Fill.p1.x)*(x-Fill.p2.x)*(y-Fill.p1.y)*(y-Fill.p2.y)*(z-Fill.p1.z)*(z-Fill.p2.z) == 0)){
+                                        if((NotInMap(fillIndex, map) && editingPart == "all" || NotInPart(fillIndex, map, editingPart) && editingPart != "all") && ((x-Fill.p1.x)*(x-Fill.p2.x)*(y-Fill.p1.y)*(y-Fill.p2.y)*(z-Fill.p1.z)*(z-Fill.p2.z) == 0)){
                                             if(hitObj == "Plane" || hitObj == "Temporary"){
                                                 if(pen.target != "all"){
                                                     map[pen.target][fillIndex] = {
@@ -520,7 +537,6 @@ function main(){
         editHistory.push(JSON.stringify(map));
         sceneUpdate(mainScreen, map, show_edge == 1);
         Preview.setPreviewObj(map, mesh_map.show);
-        Preview.update(map);
         Preview.doMarge();
         change = 0;
     }else if(clickCheck == 0){
